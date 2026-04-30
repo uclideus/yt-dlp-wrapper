@@ -1,8 +1,11 @@
 /mp3
 /*.mp3
+/m4a
+/*.m4a
 /mp4
 /*.mp4
 
 # Temporary files
-/*.part
-/*.webp
+*.part
+*.webp
+*.png
