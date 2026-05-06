@@ -273,26 +273,26 @@ def media_download(media_link):
         if state.current_format == media_target.media_format:
             found_media_target = media_target
             break
-        if found_media_target == None:
-          trace_log(Log_Level.warn, f"No valid format given, ignoring media link :: {media_link}")
+    if found_media_target == None:
+        trace_log(Log_Level.warn, f"No valid format given, ignoring media link :: {media_link}")
+    else:
+        media_link = telemetry_handle_youtube_link(media_link)
+        command = found_media_target.cmd.replace("%js_engine%", state.js_engine) \
+                                        .replace("%current_link%", media_link)   \
+                                        .replace("%passed_arguments%", state.passed_arguments)
+        status = None
+        try:
+            trace_log(Log_Level.info, f"Executing command: {command}")
+            command = [it for it in command.split(" ") if it != ""]
+            status = subprocess.run(command)
+        except Exception as err:
+            pass
+        # short-circuiting
+        if status != None and status.returncode == 0:
+            trace_log(Log_Level.info, f">>> Media downloaded successfully")
         else:
-            media_link = telemetry_handle_youtube_link(media_link)
-            command = found_media_target.cmd.replace("%js_engine%", state.js_engine) \
-                                            .replace("%current_link%", media_link)   \
-                                            .replace("%passed_arguments%", state.passed_arguments)
-            status = None
-            try:
-                trace_log(Log_Level.info, f"Executing command: {command}")
-                command = [it for it in command.split(" ") if it != ""]
-                status = subprocess.run(command)
-            except Exception as err:
-                pass
-            # short-circuiting
-            if status != None and status.returncode == 0:
-                trace_log(Log_Level.info, f">>> Media downloaded successfully")
-            else:
-                print(ok)
-                trace_log(Log_Level.warn, f">>> Media NOT downloaded successfully")
+            print(ok)
+            trace_log(Log_Level.warn, f">>> Media NOT downloaded successfully")
 
 
 # checks if the media_link is a valid and reachable http link, and then calls
