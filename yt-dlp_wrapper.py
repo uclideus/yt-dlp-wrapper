@@ -164,7 +164,7 @@ def check_begin_arguments():
         exit(0)
 
 
-# yt-dlp need an external js runtime to work properly.  I suggest to install a
+# yt-dlp needs an external js runtime to work properly.  I suggest to install a
 # minimal one like deno or quickjs from your repo of choice if no one is already
 # installed
 def check_js_engine():
@@ -283,6 +283,8 @@ def media_download(media_link):
         status = None
         try:
             trace_log(Log_Level.info, f"Executing command: {command}")
+            # cleaning the string list because subprocess.run does not like
+            # empty strings
             command = [it for it in command.split(" ") if it != ""]
             status = subprocess.run(command)
         except Exception as err:
@@ -291,7 +293,6 @@ def media_download(media_link):
         if status != None and status.returncode == 0:
             trace_log(Log_Level.info, f">>> Media downloaded successfully")
         else:
-            print(ok)
             trace_log(Log_Level.warn, f">>> Media NOT downloaded successfully")
 
 
@@ -322,9 +323,9 @@ def media_handle_link(media_link):
         media_download(media_link)
         media_move()
     else:
-        trace_log(Log_Level.warn, f"Link provided is not reachable :: {media_link}")
+        trace_log(Log_Level.warn,  f"Link provided is not reachable :: {media_link}")
         trace_log(Log_Level.debug, f">>> Response :: {resp}")
-        trace_log(Log_Level.warn, f">>> Skipping...")
+        trace_log(Log_Level.warn,  f">>> Skipping...")
 
 
 # main loop of the execution, goes one by one on the arguments given by the user
@@ -345,7 +346,7 @@ def eval_arguments():
             sys.argv.pop(0)
             arg = sys.argv[0]
             state.passed_arguments += " " + arg
-            trace_log(Log_Level.info, f"Passthrough argument :: {arg}")
+            trace_log(Log_Level.info,  f"Passthrough argument :: {arg}")
             trace_log(Log_Level.debug, f">>> Cumulative arguments :: {arg}")
 
         elif sys.argv[0] == "-X":
