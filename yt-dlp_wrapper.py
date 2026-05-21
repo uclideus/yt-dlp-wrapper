@@ -82,7 +82,7 @@ class Script_Data:
         "usage: ./script.py --help | -h"
     ]
     dependencies_js_engines = [
-        JS_Engine("nodejs", "node"),
+        JS_Engine("node", "node"),
         JS_Engine("deno", "deno"),
         JS_Engine("bun", "bun"),
         JS_Engine("quickjs", "qjs")
@@ -131,7 +131,7 @@ FORMATs:
 The formats currently supported are the following:
   audio:
     mp3  lossy audio format, MPEG-3
-    m4a  lossy audio format, MPEG-3
+    m4a  lossy audio format, MPEG-4
   video:
     mp4  lossy video format, MPEG-4
 
