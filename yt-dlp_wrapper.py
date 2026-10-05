@@ -6,8 +6,6 @@
 # directories.  To get the complete help message, please invoke the following
 # command from a shell:
 
-# $ ./yt-dlp_wrapper.py -h
-
 import sys
 import shutil
 import subprocess
@@ -78,8 +76,8 @@ class Script_Data:
             "yt-dlp %js_engine% --embed-metadata --embed-thumbnail -f bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best %current_link% %passed_arguments% -o %(title)s.%(ext)s")
     ]
     help_header  = [
-        "usage: ./script.py --format FORMAT [-x XXX] [-X] [LINK ...] [[--format FORMAT [-x XXX] [-X] [LINK ...]] ...]",
-        "usage: ./script.py --help | -h"
+        "usage: ./yt-dlp_wrapper.py --format FORMAT [-x XXX] [-X] [LINK ...] [[--format FORMAT [-x XXX] [-X] [LINK ...]] ...]",
+        "usage: ./yt-dlp_wrapper.py --help | -h"
     ]
     dependencies_js_engines = [
         JS_Engine("node", "node"),
