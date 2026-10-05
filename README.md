@@ -1,13 +1,12 @@
 # Simple wrapper script for yt-dlp
 
-
 Simple wrapper to use ease the use of [yt-dlp](https://github.com/yt-dlp/yt-dlp).
 It handles multiple inputs and tidies up the output files in different
 directories.
 
 usage:
 ```bash
-$ ./script.py -format FORMAT [-xXXX] [-X] [LINK ...] [[-format FORMAT [-xXXX] [-X] [LINK ...]] ...]
+$ ./yt-dlp_wrapper.py -format FORMAT [-xXXX] [-X] [LINK ...] [[-format FORMAT [-xXXX] [-X] [LINK ...]] ...]
 ```
 
 The wrapper requires [yt-dlp](https://github.com/yt-dlp/yt-dlp) and

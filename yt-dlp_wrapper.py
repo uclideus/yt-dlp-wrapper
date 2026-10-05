@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Simple wrapper to use ease the use of yt-dlp (https://github.com/yt-dlp/yt-dlp)
+# Simple wrapper to ease the use of yt-dlp (https://github.com/yt-dlp/yt-dlp)
 
 # It handles multiple inputs and tidies up the output files in different
 # directories.  To get the complete help message, please invoke the following
@@ -59,8 +59,8 @@ class Media_Target :
         self.cmd = cmd
 
 class JS_Engine:
-    canonical_name = ""
-    program_name   = ""
+    canonical_name = "" # yt-dlp flag name
+    program_name   = "" # executable name on system
 
     def __init__(self, canonical_name, program_name):
         self.canonical_name = canonical_name
@@ -78,7 +78,7 @@ class Script_Data:
             "yt-dlp %js_engine% --embed-metadata --embed-thumbnail -f bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best %current_link% %passed_arguments% -o %(title)s.%(ext)s")
     ]
     help_header  = [
-        "usage: ./script.py -format FORMAT [-x XXX] [-X] [LINK ...] [[-format FORMAT [-x XXX] [-X] [LINK ...]] ...]",
+        "usage: ./script.py --format FORMAT [-x XXX] [-X] [LINK ...] [[--format FORMAT [-x XXX] [-X] [LINK ...]] ...]",
         "usage: ./script.py --help | -h"
     ]
     dependencies_js_engines = [
@@ -90,7 +90,7 @@ class Script_Data:
     dependencies_programs = [
         "yt-dlp", "ffmpeg"
     ]
-    max_log_level   = Log_Level.debug
+    max_log_level   = Log_Level.error
     max_salt_level  = 100
 
 SCRIPT_DATA = Script_Data()
@@ -136,10 +136,10 @@ The formats currently supported are the following:
     mp4  lossy video format, MPEG-4
 
 Miscellaneous Arguments:
-  -h, --help    Display this help message
-  -f, --format  Select a desired FORMAT to download the media
-  -x            Pass argument XXX directly to yt-dlp
-  -X            Reset arguments passed directly to yt-dlp
+  -h, --help          Display this help message
+  -f, --format FORMAT Select a desired FORMAT to download the media
+  -x XXX              Pass argument XXX directly to yt-dlp
+  -X                  Reset arguments passed directly to yt-dlp
 
 The quality of the final media should be the best yt-dlp can generate.
 '''
@@ -185,7 +185,7 @@ def check_js_engine():
         exit(1)
     else:
         state.js_engine = "--js-runtimes " + found_js_engine.canonical_name
-        trace_log(Log_Level.info, f"Using js engine :: {found_js_engine.canonical_name}")
+        trace_log(Log_Level.debug, f"Using js engine :: {found_js_engine.canonical_name}")
 
 
 # check if the format is supported
@@ -282,7 +282,7 @@ def media_download(media_link):
                                         .replace("%passed_arguments%", state.passed_arguments)
         status = None
         try:
-            trace_log(Log_Level.info, f"Executing command: {command}")
+            trace_log(Log_Level.info, f"Executing command :: {command}")
             # cleaning the string list because subprocess.run does not like
             # empty strings
             command = [it for it in command.split(" ") if it != ""]
@@ -337,7 +337,7 @@ def eval_arguments():
         or sys.argv[0] == "-f":
             sys.argv.pop(0)
             if len(sys.argv) == 0:
-                trace_log(Log_Level.error, "You provided -format without specifying the FORMAT, are you dumb?")
+                trace_log(Log_Level.error, "You provided --format without specifying the FORMAT, are you dumb?")
                 exit(1)
             format = sys.argv[0]
             check_format(format)
