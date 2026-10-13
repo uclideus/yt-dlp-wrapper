@@ -44,6 +44,7 @@ def trace_log(log_level, *args):
 
 class Script_State:
     passed_arguments = ""
+    dest_directory   = ""
     js_engine        = None
     current_format   = None
 
@@ -134,10 +135,12 @@ The formats currently supported are the following:
     mp4  lossy video format, MPEG-4
 
 Miscellaneous Arguments:
-  -h, --help          Display this help message
-  -f, --format FORMAT Select a desired FORMAT to download the media
-  -x XXX              Pass argument XXX directly to yt-dlp
-  -X                  Reset arguments passed directly to yt-dlp
+  -h, --help            Display this help message
+  -f, --format <FORMAT> Select a desired <FORMAT> to download the media
+  -x <direct-arg>       Pass <direct-arg> on to yt-dlp
+  -X                    Reset arguments passed directly to yt-dlp
+  -d <destdir>          Use <directory> as destination directory of the media files
+  -D                    Reset the destination directory
 
 The quality of the final media should be the best yt-dlp can generate.
 '''
@@ -178,7 +181,7 @@ def check_js_engine():
         trace_log(Log_Level.error, f"Dependency failure :: no supported js runtime is found")
         trace_log(Log_Level.error, f">>> the supported engines are: ")
         for engine in js_engines:
-            trace_log(Log_Level.error, f">>> {engine.canonical_name} :: {engine.program_name}")
+            trace_log(Log_Level.error, f">>> {engine.canonical_name}")
         trace_log(Log_Level.error, "Abort")
         exit(1)
     else:
@@ -229,7 +232,12 @@ def media_salt_file(file_name, directory):
 # Divides all the downloaded media in separate directories based on the media
 # target.
 def media_move():
-    directory = state.current_format
+    directory = state.dest_directory
+    if not os.path.isdir(directory):
+        trace_log(Log_Level.warn, f"Directory provided does not exist :: {directory}")
+        directory = state.current_format
+        trace_log(Log_Level.warn, f">>> Proceding with default directory '{directory}'")
+
     if directory == None or directory == "":
         return
     if os.path.exists(directory):
@@ -243,6 +251,7 @@ def media_move():
     else:
         trace_log(Log_Level.info, f"Creating directory :: {directory}")
         os.mkdir(directory)
+
     # Tidying up It needs the for loop to cleanup other cases when the download
     # not completed properly
     for file_name in glob.glob(f"*.{state.current_format}"):
@@ -261,7 +270,7 @@ def media_move():
                     trace_log(Log_Level.info, f">>> Moving file :: '{new_file_name}' to '{directory}'")
                     shutil.move(new_file_name, directory)
                     return
-            trace_log(Log_Level.error, "Unable to move file :: UNKNOWN ERROR")
+                trace_log(Log_Level.error, "Unable to move file :: UNKNOWN ERROR")
 
 
 def media_download(media_link):
@@ -350,6 +359,12 @@ def eval_arguments():
         elif sys.argv[0] == "-X":
             state.passed_arguments = ""
             trace_log(Log_Level.info, "-X :: Clearing given arguments")
+
+        elif sys.argv[0] == "-d":
+            sys.argv.pop(0)
+            directory = sys.argv[0]
+            state.dest_directory = directory
+            trace_log(Log_Level.info, f"Destination directory :: {directory}")
 
         else:
             # not a flag, treat it as a possible link
