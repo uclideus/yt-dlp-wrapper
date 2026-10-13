@@ -367,7 +367,7 @@ def eval_arguments():
             state.dest_directory = directory
             trace_log(Log_Level.info, f"Destination directory :: {directory}")
 
-        elif sys.argvp[0] == "-D":
+        elif sys.argv[0] == "-D":
             state.dest_directory = ""
             trace_log(Log_Level.info, "Clearing destination directory")
 
