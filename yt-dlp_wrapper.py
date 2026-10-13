@@ -234,7 +234,7 @@ def media_salt_file(file_name, directory):
 def media_move():
     directory = state.dest_directory
     if not os.path.isdir(directory):
-        trace_log(Log_Level.warn, f"Directory provided does not exist :: {directory}")
+        trace_log(Log_Level.warn, f"Directory provided does not exist :: '{directory}'")
         directory = state.current_format
         trace_log(Log_Level.warn, f">>> Proceding with default directory '{directory}'")
 
@@ -261,10 +261,11 @@ def media_move():
         except OSError as err:
             if os.path.exists(f"{directory}/{file_name}"):
                 trace_log(Log_Level.warn, f"Unable to move file :: a file with the same name already exists in '{directory}'")
-                trace_log(Log_Level.warn, ">>> Trying salting file")
+                trace_log(Log_Level.warn, "Trying salting file...")
                 new_file_name = media_salt_file(file_name, directory)
                 if new_file_name == None:
                     trace_log(Log_Level.error, f">>> Cannot salt file, how many media did you download?")
+                    trace_log(Log_Level.warn, "The media will be left here")
                 else:
                     trace_log(Log_Level.info, f">>> File salted :: '{file_name}' -> '{new_file_name}'")
                     trace_log(Log_Level.info, f">>> Moving file :: '{new_file_name}' to '{directory}'")
@@ -358,13 +359,17 @@ def eval_arguments():
 
         elif sys.argv[0] == "-X":
             state.passed_arguments = ""
-            trace_log(Log_Level.info, "-X :: Clearing given arguments")
+            trace_log(Log_Level.info, "Clearing given arguments")
 
         elif sys.argv[0] == "-d":
             sys.argv.pop(0)
             directory = sys.argv[0]
             state.dest_directory = directory
             trace_log(Log_Level.info, f"Destination directory :: {directory}")
+
+        elif sys.argvp[0] == "-D":
+            state.dest_directory = ""
+            trace_log(Log_Level.info, "Clearing destination directory")
 
         else:
             # not a flag, treat it as a possible link
