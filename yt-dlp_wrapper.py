@@ -74,7 +74,7 @@ class Script_Data:
             "yt-dlp %js_engine% -x --audio-format m4a -f ba --embed-metadata --embed-thumbnail %current_link% %passed_arguments%  -o %(title)s.%(ext)s"),
         # video
         Media_Target("mp4",
-            "yt-dlp %js_engine% --embed-metadata --embed-thumbnail -f bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best %current_link% %passed_arguments% -o %(title)s.%(ext)s")
+            "yt-dlp %js_engine% --embed-metadata --embed-thumbnail --embed-subs -f bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best %current_link% %passed_arguments% -o %(title)s.%(ext)s")
     ]
     help_header  = [
         "usage: ./yt-dlp_wrapper.py --format FORMAT [-x XXX] [-X] [LINK ...] [[--format FORMAT [-x XXX] [-X] [LINK ...]] ...]",
@@ -139,7 +139,8 @@ Miscellaneous Arguments:
   -f, --format <FORMAT> Select a desired <FORMAT> to download the media
   -x <direct-arg>       Pass <direct-arg> on to yt-dlp
   -X                    Reset arguments passed directly to yt-dlp
-  -d <destdir>          Use <directory> as destination directory of the media files
+  -d <destdir>          Use <directory> as destination directory of the media files,
+                        <directory> must exist beforehand
   -D                    Reset the destination directory
 
 The quality of the final media should be the best yt-dlp can generate.
@@ -195,11 +196,11 @@ def check_format(format):
     for media_target in SCRIPT_DATA.format_list:
         if format == media_target.media_format:
             state.current_format = format
-            trace_log(Log_Level.info, f"Format set to :: {format}")
+            trace_log(Log_Level.info, f"Format set to :: '{format}'")
             is_format_valid = True
     if not is_format_valid:
-        trace_log(Log_Level.warn, f"The format provided is not valid :: {format}")
-        trace_log(Log_Level.warn, "IGNORING MEDIA LINKS until a valid format is provided")
+        trace_log(Log_Level.warn, f"The format provided is not valid :: '{format}'")
+        trace_log(Log_Level.warn, ">>> IGNORING MEDIA LINKS until a valid format is provided")
         state.current_format = None
 
 
@@ -364,8 +365,13 @@ def eval_arguments():
         elif sys.argv[0] == "-d":
             sys.argv.pop(0)
             directory = sys.argv[0]
+            # path normalization, accounting for various things
+            directory = os.path.normpath(directory)
+            directory = os.path.normcase(directory)
+            directory = os.path.expanduser(directory)
+            directory = os.path.expandvars(directory)
             state.dest_directory = directory
-            trace_log(Log_Level.info, f"Destination directory :: {directory}")
+            trace_log(Log_Level.info, f"Destination directory :: '{directory}'")
 
         elif sys.argv[0] == "-D":
             state.dest_directory = ""
